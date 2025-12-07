@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+
+<style>
+  body{font-family:monospace;font-size:20px;display:flex;justify-content:center;align-items:center;height:100vh;background:#f4f4f4;margin:0}
+  #grid{line-height:1.2;white-space:pre;user-select:none;border:1px solid #333;padding:10px;background:#fff;}
+</style>
+</head>
+<body>
+<pre id="grid"></pre>
+
+<script>
+const W = 20; 
+const H = 10; 
+let mx = 1, my = 0; 
+
+const grid = document.getElementById('grid');
+let pointer = {x:-999, y:-999};
+
+
+window.addEventListener('mousemove', e=>{
+  const rect = grid.getBoundingClientRect();
+  pointer.x = e.clientX - rect.left;
+  pointer.y = e.clientY - rect.top;
+});
+
+
+function draw(){
+  let out = "";
+  for(let y=0;y<H;y++){
+    for(let x=0;x<W;x++){
+      if(x===mx && y===my) out += "🍄‍🟫";
+      else out += "🌿";
+    }
+    out += "\n"; 
+  }
+  grid.textContent = out;
+}
+
+function tick(){
+  const rect = grid.getBoundingClientRect();
+  const cellW = rect.width / W;
+  const cellH = rect.height / H;
+
+  const kx = mx * cellW + cellW/2;
+  const ky = my * cellH + cellH/2;
+
+  const dx = pointer.x - kx;
+  const dy = pointer.y - ky;
+  const d = Math.hypot(dx,dy);
+
+  
+  if(d < 80){
+    if(Math.abs(dx) > Math.abs(dy)){
+      
+      if(dx > 0 && mx > 0) mx--;
+      else if(dx < 0 && mx < W-1) mx++;
+    } else {
+      
+      if(dy > 0 && my > 0) my--;
+      else if(dy < 0 && my < H-1) my++;
+    }
+  }
+
+  draw();
+  requestAnimationFrame(tick);
+}
+
+
+draw();
+requestAnimationFrame(tick);
+</script>
+</body>
+</html>
